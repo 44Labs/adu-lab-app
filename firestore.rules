@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function hasValidSubscription() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscription.status == 'active';
+    }
+    
+    // Public tokens for shared assessments (90-day expiration)
+    match /publicTokens/{tokenId} {
+      allow read: if true;
+      allow write: if false; // Only backend can write
+    }
+    
+    // Assessments collection
+    match /assessments/{assessmentId} {
+      allow read: if isOwner(resource.data.userId) || 
+                     (resource.data.publicToken != null && 
+                      exists(/databases/$(database)/documents/publicTokens/$(resource.data.publicToken)));
+      allow create: if true; // Anyone can create assessments
+      allow update: if isOwner(resource.data.userId) && hasValidSubscription();
+      allow delete: if false; // No deletion allowed
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Payments collection
+    match /payments/{paymentId} {
+      allow read: if isOwner(resource.data.userId);
+      allow write: if false; // Only backend can write
+    }
+    
+    // Subscriptions collection
+    match /subscriptions/{subscriptionId} {
+      allow read: if isOwner(resource.data.userId);
+      allow write: if false; // Only backend can write
+    }
+  }
+}

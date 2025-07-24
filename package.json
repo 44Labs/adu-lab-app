@@ -1,0 +1,36 @@
+{
+  "name": "adu-lab-app",
+  "version": "1.0.0",
+  "description": "ADU Lab - AI-Powered ADU Planning Platform by 44 Labs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "firebase serve --only hosting",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "echo 'CSS build complete'",
+    "build:js": "echo 'JS build complete'",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/44laboratories/adu-lab-app.git"
+  },
+  "keywords": [
+    "ADU",
+    "AI",
+    "Planning",
+    "Real Estate",
+    "44 Labs"
+  ],
+  "author": "44 Laboratories",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "firebase": "^10.7.1",
+    "stripe": "^14.10.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.2"
+  }
+}
